@@ -1,0 +1,77 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    // Collection: categories
+    // - name: string
+    // - imageUrl: string
+    //
+    // Collection: products
+    // - name: string
+    // - sellingPrice: number
+    // - buyingPrice: number
+    // - productId: string
+    // - categoryId: string
+    //
+    // Collection: sales
+    // - productName: string
+    // - sellingPrice: number
+    // - buyingPrice: number
+    // - profit: number
+    // - timestamp: timestamp
+    // - code: string
+    //
+    // Collection: config
+    // - paymentApiKey: string
+    // - orderApiKey: string
+    // - paymentBaseUrl: string
+    // - orderBaseUrl: string
+    //
+    // Collection: admins
+    // - email: string
+    // - role: string
+    // ===============================================================
+
+    // Helper Functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        request.auth.token.email == "ahmed5678ahmd@gmail.com" ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    // Categories and Products are readable by everyone
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Sales are only readable by admins
+    match /sales/{saleId} {
+      allow read: if isAdmin();
+      allow create: if true; // Allow creation from API routes (which use server-side logic)
+      allow update, delete: if isAdmin();
+    }
+
+    // Config is only readable/writable by admins
+    match /config/{configId} {
+      allow read, write: if isAdmin();
+    }
+
+    // Admins collection
+    match /admins/{adminId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

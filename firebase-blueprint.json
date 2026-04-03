@@ -1,0 +1,85 @@
+{
+  "entities": {
+    "Category": {
+      "title": "Category",
+      "description": "Product categories for the store",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Category name" },
+        "imageUrl": { "type": "string", "description": "Category image URL" }
+      },
+      "required": ["name", "imageUrl"]
+    },
+    "Product": {
+      "title": "Product",
+      "description": "Digital cards/products within a category",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "description": "Product name" },
+        "sellingPrice": { "type": "number", "description": "Price shown to customers" },
+        "buyingPrice": { "type": "number", "description": "Cost price for profit calculation" },
+        "productId": { "type": "string", "description": "External product ID for API calls" },
+        "categoryId": { "type": "string", "description": "Reference to the category" }
+      },
+      "required": ["name", "sellingPrice", "buyingPrice", "productId", "categoryId"]
+    },
+    "Sale": {
+      "title": "Sale",
+      "description": "Record of a successful sale",
+      "type": "object",
+      "properties": {
+        "productName": { "type": "string", "description": "Name of the sold product" },
+        "sellingPrice": { "type": "number", "description": "Price it was sold for" },
+        "buyingPrice": { "type": "number", "description": "Cost price at the time of sale" },
+        "profit": { "type": "number", "description": "Calculated profit (selling - buying)" },
+        "timestamp": { "type": "string", "format": "date-time", "description": "When the sale occurred" },
+        "code": { "type": "string", "description": "The digital card code delivered" }
+      },
+      "required": ["productName", "sellingPrice", "buyingPrice", "profit", "timestamp", "code"]
+    },
+    "Config": {
+      "title": "Config",
+      "description": "System configuration and API keys",
+      "type": "object",
+      "properties": {
+        "paymentApiKey": { "type": "string", "description": "API key for payment gateway" },
+        "orderApiKey": { "type": "string", "description": "API key for order creation" },
+        "paymentBaseUrl": { "type": "string", "description": "Base URL for payment API" },
+        "orderBaseUrl": { "type": "string", "description": "Base URL for order API" }
+      },
+      "required": ["paymentApiKey", "orderApiKey"]
+    },
+    "Admin": {
+      "title": "Admin",
+      "description": "Administrator user records",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "description": "Admin email" },
+        "role": { "type": "string", "description": "User role (e.g., 'admin')" }
+      },
+      "required": ["email", "role"]
+    }
+  },
+  "firestore": {
+    "/categories/{categoryId}": {
+      "schema": "Category",
+      "description": "Store categories"
+    },
+    "/products/{productId}": {
+      "schema": "Product",
+      "description": "Store products"
+    },
+    "/sales/{saleId}": {
+      "schema": "Sale",
+      "description": "Sales history"
+    },
+    "/config/main": {
+      "schema": "Config",
+      "description": "Global configuration"
+    },
+    "/admins/{adminId}": {
+      "schema": "Admin",
+      "description": "Administrator users"
+    }
+  }
+}
